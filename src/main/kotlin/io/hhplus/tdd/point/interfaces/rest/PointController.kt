@@ -1,9 +1,11 @@
 package io.hhplus.tdd.point.interfaces.rest
 
 import io.hhplus.tdd.point.application.PointService
+import io.hhplus.tdd.point.application.command.GetPointHistoryCommand
 import io.hhplus.tdd.point.application.command.GetUserPointCommand
 import io.hhplus.tdd.point.application.command.PointChargeCommand
 import io.hhplus.tdd.point.application.command.PointUseCommand
+import io.hhplus.tdd.point.application.result.PointHistoryResult
 import io.hhplus.tdd.point.application.result.UserPointResult
 import io.hhplus.tdd.point.domain.entity.PointHistory
 import io.hhplus.tdd.point.domain.entity.UserPoint
@@ -40,8 +42,12 @@ class PointController(
     @GetMapping("{id}/histories")
     fun history(
         @PathVariable id: Long,
-    ): List<PointHistory> {
-        return emptyList()
+    ): List<PointHistoryResult> {
+        if (id <= 0) throw PointException(INVALID_PARAMETER, "잘못된 userId 입니다.")
+
+        val command = GetPointHistoryCommand(id)
+
+        return pointService.getUserPointHistory(command)
     }
 
     /**

@@ -157,4 +157,34 @@ class PointControllerTest {
             .andExpect(jsonPath("$.message").value("잘못된 userId 입니다."))
     }
 
+    @Test
+    fun `포인트 내역을 조회한다`() {
+        // given
+        val id = 1L
+
+        // then
+        mockMvc.perform(
+            get("/point/${id}/histories")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = [-1, 0])
+    fun `포인트 내역 조회 시 유저 아이디는 양수 이다`(userId: Long) {
+        // given
+
+        // then
+        mockMvc.perform(
+            get("/point/${userId}/histories")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andDo(print())
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.message").value("잘못된 userId 입니다."))
+    }
+
 }

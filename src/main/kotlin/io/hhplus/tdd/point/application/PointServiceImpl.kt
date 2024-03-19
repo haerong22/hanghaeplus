@@ -1,9 +1,12 @@
 package io.hhplus.tdd.point.application
 
+import io.hhplus.tdd.point.application.command.GetPointHistoryCommand
 import io.hhplus.tdd.point.application.command.GetUserPointCommand
 import io.hhplus.tdd.point.application.command.PointChargeCommand
 import io.hhplus.tdd.point.application.command.PointUseCommand
+import io.hhplus.tdd.point.application.result.PointHistoryResult
 import io.hhplus.tdd.point.application.result.UserPointResult
+import io.hhplus.tdd.point.domain.PointHistoryReader
 import io.hhplus.tdd.point.domain.PointHistoryWriter
 import io.hhplus.tdd.point.domain.UserPointReader
 import io.hhplus.tdd.point.domain.UserPointWriter
@@ -18,8 +21,14 @@ class PointServiceImpl(
     private val userPointWriter: UserPointWriter,
     private val userPointReader: UserPointReader,
     private val pointHistoryWriter: PointHistoryWriter,
+    private val pointHistoryReader: PointHistoryReader,
 ) : PointService {
     private val lock: ReentrantLock = ReentrantLock()
+
+    override fun getUserPointHistory(command: GetPointHistoryCommand): List<PointHistoryResult> {
+        return pointHistoryReader.findAllByUserId(command.userId)
+            .map { pointHistory -> PointHistoryResult.of(pointHistory) }
+    }
 
     override fun getUserPoint(command: GetUserPointCommand): UserPointResult {
         return UserPointResult.of(userPointReader.findById(command.id))
