@@ -35,6 +35,7 @@ class PointHistoryTable {
     }
 
     fun clear() {
+        cursor = 1L
         table.clear()
     }
 }

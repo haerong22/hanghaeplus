@@ -2,6 +2,7 @@ package io.hhplus.tdd.point.interfaces.rest
 
 import io.hhplus.tdd.point.application.PointService
 import io.hhplus.tdd.point.application.command.PointChargeCommand
+import io.hhplus.tdd.point.application.command.PointUseCommand
 import io.hhplus.tdd.point.application.result.UserPointResult
 import io.hhplus.tdd.point.domain.entity.PointHistory
 import io.hhplus.tdd.point.domain.entity.UserPoint
@@ -61,7 +62,12 @@ class PointController(
     fun use(
         @PathVariable id: Long,
         @RequestBody amount: Long,
-    ): UserPoint {
-        return UserPoint(0, 0, 0)
+    ): UserPointResult {
+        if (id <= 0) throw PointException(INVALID_PARAMETER, "잘못된 userId 입니다.")
+        if (amount <= 0) throw PointException(INVALID_PARAMETER, "포인트는 1 이상 충전 가능합니다.")
+
+        val command = PointUseCommand(id, amount)
+
+        return pointService.use(command)
     }
 }

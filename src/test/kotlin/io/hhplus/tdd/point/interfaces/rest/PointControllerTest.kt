@@ -76,4 +76,53 @@ class PointControllerTest {
             .andExpect(jsonPath("$.message").value("포인트는 1 이상 충전 가능합니다."))
     }
 
+    @Test
+    fun `포인트를 사용한다`() {
+        // given
+        val amount = 10_000L
+
+        // then
+        mockMvc.perform(
+            patch("/point/1/use")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(amount))
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+    }
+
+    @ParameterizedTest
+    @CsvSource("-1,10000", "0,10000")
+    fun `포인트 사용 시 유저 아이디는 양수 이다`(userId: Long, amount: Long) {
+        // given
+
+        // then
+        mockMvc.perform(
+            patch("/point/${userId}/use")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(amount))
+        )
+            .andDo(print())
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.message").value("잘못된 userId 입니다."))
+    }
+
+    @ParameterizedTest
+    @CsvSource("1,0", "1,-10000")
+    fun `포인트 사용은 1 이상 가능하다`(userId: Long, amount: Long) {
+        // given
+
+        // then
+        mockMvc.perform(
+            patch("/point/${userId}/use")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(amount))
+        )
+            .andDo(print())
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.message").value("포인트는 1 이상 충전 가능합니다."))
+    }
+
 }

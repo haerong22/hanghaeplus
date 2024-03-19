@@ -1,6 +1,7 @@
 package io.hhplus.tdd.point.application
 
 import io.hhplus.tdd.point.application.command.PointChargeCommand
+import io.hhplus.tdd.point.application.command.PointUseCommand
 import io.hhplus.tdd.point.application.result.UserPointResult
 import io.hhplus.tdd.point.domain.PointHistoryWriter
 import io.hhplus.tdd.point.domain.UserPointReader
@@ -17,24 +18,35 @@ class PointServiceImpl(
     private val userPointReader: UserPointReader,
     private val pointHistoryWriter: PointHistoryWriter,
 ) : PointService {
-
     private val lock: ReentrantLock = ReentrantLock()
 
     override fun charge(command: PointChargeCommand): UserPointResult {
         lock.withLock {
             return userPointReader.findById(command.id)
+                .run { charge(command.point) }
                 .run {
                     createPointHistory(command.point, TransactionType.CHARGE)
-                    this
-                }
-                .run {
-                    val updatedUserPoint = this.charge(command.point)
-                    userPointWriter.insertOrUpdate(updatedUserPoint.id, updatedUserPoint.point)
+                    updateUserPoint()
                 }
                 .run { UserPointResult.of(this) }
         }
     }
 
+    override fun use(command: PointUseCommand): UserPointResult {
+        lock.withLock {
+            return userPointReader.findById(command.id)
+                .run { use(command.point) }
+                .run {
+                    createPointHistory(command.point, TransactionType.USE)
+                    updateUserPoint()
+                }
+                .run { UserPointResult.of(this) }
+        }
+    }
+
+    private fun UserPoint.updateUserPoint() : UserPoint{
+        return userPointWriter.insertOrUpdate(this.id, this.point)
+    }
     private fun UserPoint.createPointHistory(amount: Long, transactionType: TransactionType) {
         pointHistoryWriter.insert(
             id = this.id,

@@ -3,14 +3,16 @@ package io.hhplus.tdd.point.application
 import io.hhplus.tdd.database.PointHistoryTable
 import io.hhplus.tdd.database.UserPointTable
 import io.hhplus.tdd.point.application.command.PointChargeCommand
+import io.hhplus.tdd.point.application.command.PointUseCommand
 import io.hhplus.tdd.point.domain.entity.TransactionType
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.tuple
+import io.hhplus.tdd.point.exception.PointException
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicInteger
 
 @SpringBootTest
 class PointServiceImplTest(
@@ -77,5 +79,116 @@ class PointServiceImplTest(
             .containsExactly(1L, 1_000_000L)
 
         assertThat(pointHistory).hasSize(100)
+    }
+
+    @Test
+    fun `포인트를 사용한다`() {
+        // given
+        userPointTable.insertOrUpdate(1L, 10_000L)
+        val command = PointUseCommand(1L, 5_000L)
+
+        // when
+        pointService.use(command)
+
+        // then
+        val userPoint = userPointTable.selectById(1L)
+        val pointHistory = pointHistoryTable.selectAllByUserId(1L)
+
+        assertThat(userPoint)
+            .extracting("id", "point")
+            .containsExactly(1L, 5_000L)
+
+        assertThat(pointHistory).hasSize(1)
+            .extracting("id", "userId", "amount", "type")
+            .containsExactlyInAnyOrder(
+                tuple(1L, 1L, 5_000L, TransactionType.USE),
+            )
+    }
+
+    @Test
+    fun `포인트 사용시 잔액이 부족하면 에러가 발생한다`() {
+        // given
+        val command = PointUseCommand(1L, 5_000L)
+
+        // when then
+        assertThatThrownBy { pointService.use(command) }
+            .isInstanceOf(PointException::class.java)
+            .hasMessage("잔액이 부족합니다.")
+    }
+
+    @Test
+    fun `포인트를 사용 동시성 테스트`() {
+        // given
+        userPointTable.insertOrUpdate(1L, 1_000_000)
+        val command = PointUseCommand(1L, 10_000L)
+
+        // when
+        val count = 100
+        val latch = CountDownLatch(count)
+        repeat(count) {
+            Thread {
+                pointService.use(command)
+                latch.countDown()
+            }.start()
+        }
+
+        latch.await()
+
+        // then
+        val userPoint = userPointTable.selectById(1L)
+        val pointHistory = pointHistoryTable.selectAllByUserId(1L)
+
+        assertThat(userPoint)
+            .extracting("id", "point")
+            .containsExactly(1L, 0L)
+
+        assertThat(pointHistory).hasSize(100)
+    }
+
+    @Test
+    fun `포인트 동시성 테스트`() {
+        // given
+        val chargeCommand = PointChargeCommand(1L, 10_000L)
+        val useCommand = PointUseCommand(1L, 10_000L)
+
+        // when
+        val count = 100
+        val latch = CountDownLatch(count)
+        val failCount = AtomicInteger(0)
+
+        repeat(count) { index ->
+
+            if (index % 2 == 0) {
+                Thread {
+                    pointService.charge(chargeCommand)
+                        .also { println(it.point) }
+                    latch.countDown()
+                }.start()
+            } else {
+                Thread {
+                    try {
+                        pointService.use(useCommand)
+                            .also { println(it.point) }
+                    } catch (e: Exception) {
+                        println("잔액부족")
+                        failCount.addAndGet(1)
+                    } finally {
+                        latch.countDown()
+                    }
+                }.start()
+            }
+        }
+
+        latch.await()
+
+        // then
+        val userPoint = userPointTable.selectById(1L)
+        val pointHistory = pointHistoryTable.selectAllByUserId(1L)
+
+        assertThat(userPoint)
+            .extracting("id", "point")
+            .containsExactly(1L, failCount.get() * 10_000L)
+
+        assertThat(pointHistory).hasSize(100 - failCount.get())
     }
 }

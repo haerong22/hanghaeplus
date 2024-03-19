@@ -23,13 +23,48 @@ class UserPointTest {
 
     @ParameterizedTest
     @ValueSource(longs = [-1, 0])
-    fun `포인트 충전은 1이상 가능하다`(amount: Long) {
+    fun `포인트 충전 시 수량은 양수이다`(amount: Long) {
         // given
         val userPoint = UserPoint(1L, 0L, System.currentTimeMillis())
 
         // when then
         assertThatThrownBy { userPoint.charge(amount) }
             .isInstanceOf(PointException::class.java)
-            .hasMessage("포인트 충전은 1이상 가능합니다.")
+            .hasMessage("포인트 수량은 양수만 가능합니다.")
+    }
+
+    @Test
+    fun `포인트를 사용한다`() {
+        // given
+        val userPoint = UserPoint(1L, 5_000L, System.currentTimeMillis())
+
+        // when
+        val result = userPoint.use(5_000L)
+
+        // then
+        assertThat(result.point).isEqualTo(0L)
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = [-1, 0])
+    fun `포인트 사용시 수량은 양수이다`(amount: Long) {
+        // given
+        val userPoint = UserPoint(1L, 0L, System.currentTimeMillis())
+
+        // when then
+        assertThatThrownBy { userPoint.use(amount) }
+            .isInstanceOf(PointException::class.java)
+            .hasMessage("포인트 수량은 양수만 가능합니다.")
+    }
+
+    @Test
+    fun `포인트를 사용시 잔액보다 많은 양을 사용하면 에러가 발생한다`() {
+        // given
+        val userPoint = UserPoint(1L, 5_000L, System.currentTimeMillis())
+
+        // when then
+        assertThatThrownBy { userPoint.use(10_000L) }
+            .isInstanceOf(PointException::class.java)
+            .hasMessage("잔액이 부족합니다.")
     }
 }
