@@ -1,5 +1,6 @@
 package io.hhplus.tdd.point.application
 
+import io.hhplus.tdd.point.application.command.GetUserPointCommand
 import io.hhplus.tdd.point.application.command.PointChargeCommand
 import io.hhplus.tdd.point.application.command.PointUseCommand
 import io.hhplus.tdd.point.domain.entity.TransactionType
@@ -56,4 +57,24 @@ class PointServiceImplUnitTest {
             .extracting("id", "userId", "type", "amount", "timeMillis")
             .containsExactly(1L, 1L, TransactionType.USE, 4_000L, 1L)
     }
+
+    @Test
+    fun `포인트를 조회한다`() {
+        // given
+        val userPointWriter = UserPointWriterStub()
+        val userPointReader = UserPointReaderStub()
+        val pointHistoryWriter = PointHistoryWriterStub()
+        val pointService = PointServiceImpl(userPointWriter, userPointReader, pointHistoryWriter)
+
+        val command = GetUserPointCommand(1L)
+
+        // when
+        val result = pointService.getUserPoint(command)
+
+        // then
+        assertThat(result)
+            .extracting("id", "point", "updateMillis")
+            .containsExactly(1L, 0L, 1L)
+    }
+
 }

@@ -1,5 +1,6 @@
 package io.hhplus.tdd.point.application
 
+import io.hhplus.tdd.point.application.command.GetUserPointCommand
 import io.hhplus.tdd.point.application.command.PointChargeCommand
 import io.hhplus.tdd.point.application.command.PointUseCommand
 import io.hhplus.tdd.point.application.result.UserPointResult
@@ -19,6 +20,10 @@ class PointServiceImpl(
     private val pointHistoryWriter: PointHistoryWriter,
 ) : PointService {
     private val lock: ReentrantLock = ReentrantLock()
+
+    override fun getUserPoint(command: GetUserPointCommand): UserPointResult {
+        return UserPointResult.of(userPointReader.findById(command.id))
+    }
 
     override fun charge(command: PointChargeCommand): UserPointResult {
         lock.withLock {

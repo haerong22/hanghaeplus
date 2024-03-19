@@ -4,7 +4,7 @@ import io.hhplus.tdd.point.domain.UserPointReader
 import io.hhplus.tdd.point.domain.entity.UserPoint
 
 class UserPointReaderStub(
-    private val initialAmount: Long
+    private val initialAmount: Long = 0L
 ) : UserPointReader {
 
     override fun findById(id: Long): UserPoint {

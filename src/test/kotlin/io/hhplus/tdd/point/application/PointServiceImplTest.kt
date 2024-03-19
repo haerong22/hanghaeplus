@@ -2,6 +2,7 @@ package io.hhplus.tdd.point.application
 
 import io.hhplus.tdd.database.PointHistoryTable
 import io.hhplus.tdd.database.UserPointTable
+import io.hhplus.tdd.point.application.command.GetUserPointCommand
 import io.hhplus.tdd.point.application.command.PointChargeCommand
 import io.hhplus.tdd.point.application.command.PointUseCommand
 import io.hhplus.tdd.point.domain.entity.TransactionType
@@ -190,5 +191,22 @@ class PointServiceImplTest(
             .containsExactly(1L, failCount.get() * 10_000L)
 
         assertThat(pointHistory).hasSize(100 - failCount.get())
+    }
+
+    @Test
+    fun `포인트를 조회한다`() {
+        // given
+        userPointTable.insertOrUpdate(1L, 10_000L)
+        val command = GetUserPointCommand(1L)
+
+        // when
+        pointService.getUserPoint(command)
+
+        // then
+        val userPoint = userPointTable.selectById(1L)
+
+        assertThat(userPoint)
+            .extracting("id", "point")
+            .containsExactly(1L, 10_000L)
     }
 }

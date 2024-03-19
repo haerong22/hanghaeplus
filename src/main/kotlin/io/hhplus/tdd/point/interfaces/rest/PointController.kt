@@ -1,6 +1,7 @@
 package io.hhplus.tdd.point.interfaces.rest
 
 import io.hhplus.tdd.point.application.PointService
+import io.hhplus.tdd.point.application.command.GetUserPointCommand
 import io.hhplus.tdd.point.application.command.PointChargeCommand
 import io.hhplus.tdd.point.application.command.PointUseCommand
 import io.hhplus.tdd.point.application.result.UserPointResult
@@ -25,8 +26,12 @@ class PointController(
     @GetMapping("{id}")
     fun point(
         @PathVariable id: Long,
-    ): UserPoint {
-        return UserPoint(0, 0, 0)
+    ): UserPointResult {
+        if (id <= 0) throw PointException(INVALID_PARAMETER, "잘못된 userId 입니다.")
+
+        val command = GetUserPointCommand(id)
+
+        return pointService.getUserPoint(command)
     }
 
     /**
