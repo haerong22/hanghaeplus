@@ -1,6 +1,6 @@
 package io.hhplus.tdd.database
 
-import io.hhplus.tdd.point.UserPoint
+import io.hhplus.tdd.point.domain.entity.UserPoint
 import org.springframework.stereotype.Component
 
 /**
@@ -20,5 +20,9 @@ class UserPointTable {
         val userPoint = UserPoint(id = id, point = amount, updateMillis = System.currentTimeMillis())
         table[id] = userPoint
         return userPoint
+    }
+
+    fun clear() {
+        table.clear()
     }
 }
