@@ -12,6 +12,7 @@ import io.hhplus.tdd.point.domain.UserPointReader
 import io.hhplus.tdd.point.domain.UserPointWriter
 import io.hhplus.tdd.point.domain.entity.TransactionType
 import io.hhplus.tdd.point.domain.entity.UserPoint
+import io.hhplus.tdd.common.lock.CustomLock
 import org.springframework.stereotype.Service
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -23,7 +24,7 @@ class PointServiceImpl(
     private val pointHistoryWriter: PointHistoryWriter,
     private val pointHistoryReader: PointHistoryReader,
 ) : PointService {
-    private val lock: ReentrantLock = ReentrantLock()
+    private val lock: ReentrantLock = CustomLock.POINT.lock
 
     override fun getUserPointHistory(command: GetPointHistoryCommand): List<PointHistoryResult> {
         return pointHistoryReader.findAllByUserId(command.userId)
