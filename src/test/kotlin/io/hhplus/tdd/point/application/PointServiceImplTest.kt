@@ -6,13 +6,17 @@ import io.hhplus.tdd.point.application.command.GetPointHistoryCommand
 import io.hhplus.tdd.point.application.command.GetUserPointCommand
 import io.hhplus.tdd.point.application.command.PointChargeCommand
 import io.hhplus.tdd.point.application.command.PointUseCommand
+import io.hhplus.tdd.point.application.result.UserPointResult
 import io.hhplus.tdd.point.domain.entity.TransactionType
+import io.hhplus.tdd.point.domain.entity.UserPoint
 import io.hhplus.tdd.point.exception.PointException
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletableFuture.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -58,29 +62,35 @@ class PointServiceImplTest(
     @Test
     fun `포인트를 충전 동시성 테스트`() {
         // given
-        val command = PointChargeCommand(1L, 10_000L)
+        val userId1 = 1L
+        val userId2 = 2L
 
         // when
-        val count = 100
-        val latch = CountDownLatch(count)
-        repeat(count) {
-            Thread {
-                pointService.charge(command)
-                latch.countDown()
-            }.start()
-        }
-
-        latch.await()
+        allOf(
+            supplyAsync { pointService.charge(PointChargeCommand(userId1, 100L)) },
+            supplyAsync { pointService.charge(PointChargeCommand(userId1, 200L)) },
+            supplyAsync { pointService.charge(PointChargeCommand(userId1, 300L)) },
+            supplyAsync { pointService.charge(PointChargeCommand(userId2, 400L)) },
+            supplyAsync { pointService.charge(PointChargeCommand(userId2, 500L)) },
+            supplyAsync { pointService.charge(PointChargeCommand(userId2, 600L)) },
+        ).join()
 
         // then
-        val userPoint = userPointTable.selectById(1L)
-        val pointHistory = pointHistoryTable.selectAllByUserId(1L)
+        val userPoint1 = userPointTable.selectById(1L)
+        val pointHistory1 = pointHistoryTable.selectAllByUserId(1L)
 
-        assertThat(userPoint)
+        assertThat(userPoint1)
             .extracting("id", "point")
-            .containsExactly(1L, 1_000_000L)
+            .containsExactly(1L, 100L + 200L + 300L)
+        assertThat(pointHistory1).hasSize(3)
 
-        assertThat(pointHistory).hasSize(100)
+        val userPoint2 = userPointTable.selectById(2L)
+        val pointHistory2 = pointHistoryTable.selectAllByUserId(2L)
+
+        assertThat(userPoint2)
+            .extracting("id", "point")
+            .containsExactly(2L, 400L + 500L + 600L)
+        assertThat(pointHistory2).hasSize(3)
     }
 
     @Test
@@ -108,7 +118,7 @@ class PointServiceImplTest(
     }
 
     @Test
-    fun `포인트 사용시 잔액이 부족하면 에러가 발생한다`() {
+    fun `포인트 사용시 잔액이 부족하면 PointException이 발생한다`() {
         // given
         val command = PointUseCommand(1L, 5_000L)
 
@@ -121,20 +131,16 @@ class PointServiceImplTest(
     @Test
     fun `포인트를 사용 동시성 테스트`() {
         // given
-        userPointTable.insertOrUpdate(1L, 1_000_000)
-        val command = PointUseCommand(1L, 10_000L)
+        val userId = 1L
+        userPointTable.insertOrUpdate(userId, 1000L)
 
         // when
-        val count = 100
-        val latch = CountDownLatch(count)
-        repeat(count) {
-            Thread {
-                pointService.use(command)
-                latch.countDown()
-            }.start()
-        }
-
-        latch.await()
+        allOf(
+            supplyAsync { pointService.use(PointUseCommand(userId, 100L)) },
+            supplyAsync { pointService.use(PointUseCommand(userId, 200L)) },
+            supplyAsync { pointService.use(PointUseCommand(userId, 300L)) },
+            supplyAsync { pointService.use(PointUseCommand(userId, 400L)) },
+        ).join()
 
         // then
         val userPoint = userPointTable.selectById(1L)
@@ -144,7 +150,7 @@ class PointServiceImplTest(
             .extracting("id", "point")
             .containsExactly(1L, 0L)
 
-        assertThat(pointHistory).hasSize(100)
+        assertThat(pointHistory).hasSize(4)
     }
 
     @Test
@@ -155,33 +161,25 @@ class PointServiceImplTest(
 
         // when
         val count = 100
-        val latch = CountDownLatch(count)
         val failCount = AtomicInteger(0)
+        val futures = mutableListOf<CompletableFuture<UserPointResult>>()
 
         repeat(count) { index ->
-
             if (index % 2 == 0) {
-                Thread {
-                    pointService.charge(chargeCommand)
-                        .also { println(it.point) }
-                    latch.countDown()
-                }.start()
+                futures.add(supplyAsync { pointService.charge(chargeCommand) })
             } else {
-                Thread {
-                    try {
+                futures.add(supplyAsync {
+                    runCatching {
                         pointService.use(useCommand)
-                            .also { println(it.point) }
-                    } catch (e: Exception) {
+                    }.onFailure {
                         println("잔액부족")
                         failCount.addAndGet(1)
-                    } finally {
-                        latch.countDown()
-                    }
-                }.start()
+                    }.getOrNull()
+                })
             }
         }
 
-        latch.await()
+        allOf(*futures.toTypedArray()).join()
 
         // then
         val userPoint = userPointTable.selectById(1L)
