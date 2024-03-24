@@ -1,0 +1,7 @@
+server:
+  shutdown: graceful
+
+spring:
+  config:
+    import:
+      - database.yml
