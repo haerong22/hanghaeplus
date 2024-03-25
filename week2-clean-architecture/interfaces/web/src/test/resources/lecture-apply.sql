@@ -1,0 +1,1 @@
+INSERT INTO lecture(name, quota, start_at, created_at, updated_at) VALUES ('강의', 5, now(), now(), now())
