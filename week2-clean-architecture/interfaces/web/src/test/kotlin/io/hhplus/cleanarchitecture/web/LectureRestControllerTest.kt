@@ -1,19 +1,17 @@
 package io.hhplus.cleanarchitecture.web
 
 import io.hhplus.cleanarchitecture.domain.lecture.LectureService
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.*
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(LectureRestController::class)
 class LectureRestControllerTest: WebTestSupport() {
@@ -55,4 +53,54 @@ class LectureRestControllerTest: WebTestSupport() {
             .andExpect(jsonPath("$.code").value("400"))
             .andExpect(jsonPath("$.message").value("userId 는 양수 값 입니다."))
     }
+
+    @Test
+    fun `수강 신청 상태 확인 성공`() {
+        // given
+        val lectureId = 1L
+        val userId = 1L
+
+        // then
+        mockMvc.perform(
+            get("/api/lectures/%d/apply?userId=%s".format(lectureId, userId))
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.code").value("0"))
+            .andExpect(jsonPath("$.message").value("success"))
+            .andExpect(jsonPath("$.body").value(false))
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = [-1, 0])
+    fun `수강 신청 상태 확인 시 userId는 양수이다`(userId: Long) {
+        // given
+        val lectureId = 1L
+
+        // then
+        mockMvc.perform(
+            get("/api/lectures/%d/apply?userId=%s".format(lectureId, userId))
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.message").value("userId 는 양수 값 입니다."))
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = [-1, 0])
+    fun `수강 신청 상태 확인 시 lectureId는 양수이다`(lectureId: Long) {
+        // given
+        val userId = 1L
+
+        // then
+        mockMvc.perform(
+            get("/api/lectures/%d/apply?userId=%s".format(lectureId, userId))
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.message").value("lectureId 는 양수 값 입니다."))
+    }
+
 }

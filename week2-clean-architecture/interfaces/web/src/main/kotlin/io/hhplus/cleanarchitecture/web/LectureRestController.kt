@@ -14,11 +14,24 @@ class LectureRestController(
     @PostMapping("/apply")
     fun applyLecture(
         @RequestBody request: LectureApplyRequest
-    ) : CommonResponse<Void> {
+    ): CommonResponse<Void> {
         request.validate()
 
         lectureService.apply(request.userId)
 
         return CommonResponse.ok()
+    }
+
+    @GetMapping("/{lectureId}/apply")
+    fun getMyLectureAppliedStatus(
+        @PathVariable lectureId: Long,
+        request: LectureAppliedStatusRequest,
+    ): CommonResponse<Boolean> {
+        val command = request
+            .apply { this.lectureId = lectureId }
+            .validate()
+            .toCommand()
+
+        return CommonResponse.ok(lectureService.getMyLectureAppliedStatus(command))
     }
 }

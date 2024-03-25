@@ -5,3 +5,6 @@ Content-Type: application/json
 {
   "userId" : 1
 }
+
+### 강의 신청 현황 조회
+GET http://localhost:8080/api/lectures/1/apply?userId=1
