@@ -1,0 +1,7 @@
+### 강의 신청
+POST http://localhost:8080/api/lectures/apply
+Content-Type: application/json
+
+{
+  "userId" : 1
+}
