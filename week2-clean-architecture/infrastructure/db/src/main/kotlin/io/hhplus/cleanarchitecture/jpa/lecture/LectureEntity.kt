@@ -15,14 +15,14 @@ internal data class LectureEntity(
     val name: String,
 
     @Column(nullable = false)
-    val remain: Int,
+    val quota: Int,
 
     @Column(nullable = false)
     val startAt: LocalDateTime,
 
-) : BaseEntity() {
+    ) : BaseEntity() {
 
     fun toDomain(): Lecture {
-        return Lecture(id!!, name, remain, startAt)
+        return Lecture(id!!, name, quota, startAt)
     }
 }
