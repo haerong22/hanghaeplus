@@ -26,4 +26,8 @@ class LectureService(
 
         lectureManager.applyLecture(lectureApplicant)
     }
+
+    fun getMyLectureAppliedStatus(command: LectureAppliedStatusCommand) : Boolean {
+        return lectureReader.existApply(command.lectureId, command.userid)
+    }
 }
