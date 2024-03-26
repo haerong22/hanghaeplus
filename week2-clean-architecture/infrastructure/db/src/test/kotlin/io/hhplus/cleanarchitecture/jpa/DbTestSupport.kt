@@ -14,7 +14,7 @@ import org.springframework.test.context.TestConstructor
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Import(JpaConfig::class, DbCleanup::class)
-class DbTestSupport {
+abstract class DbTestSupport {
 
     @Autowired
     lateinit var dbCleanup: DbCleanup
