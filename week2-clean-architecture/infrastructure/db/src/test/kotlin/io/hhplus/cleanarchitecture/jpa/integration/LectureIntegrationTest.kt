@@ -1,14 +1,11 @@
 package io.hhplus.cleanarchitecture.jpa.integration
 
-import io.hhplus.cleanarchitecture.domain.lecture.LectureManager
-import io.hhplus.cleanarchitecture.domain.lecture.LectureReader
 import io.hhplus.cleanarchitecture.domain.lecture.LectureRepository
 import io.hhplus.cleanarchitecture.domain.lecture.LectureService
 import io.hhplus.cleanarchitecture.jpa.IntegrationTestSupport
 import io.hhplus.cleanarchitecture.jpa.lecture.LectureEntity
 import io.hhplus.cleanarchitecture.jpa.lecture.LectureJpaRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
