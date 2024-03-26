@@ -18,4 +18,8 @@ class LectureReader(
     fun existApply(lectureId: Long, userId: Long): Boolean {
         return lectureRepository.existApply(lectureId, userId)
     }
+
+    fun getLectureList(): List<Lecture> {
+        return lectureRepository.getLectureList()
+    }
 }

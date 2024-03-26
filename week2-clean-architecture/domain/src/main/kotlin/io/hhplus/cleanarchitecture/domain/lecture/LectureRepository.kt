@@ -9,4 +9,6 @@ interface LectureRepository {
     fun getLectureApplicantCount(lectureId: Long): Int
 
     fun existApply(lectureId: Long, userId: Long): Boolean
+
+    fun getLectureList(): List<Lecture>
 }

@@ -1,5 +1,6 @@
 package io.hhplus.cleanarchitecture.web.lecture
 
+import io.hhplus.cleanarchitecture.domain.lecture.Lecture
 import io.hhplus.cleanarchitecture.domain.lecture.LectureService
 import io.hhplus.cleanarchitecture.web.CommonResponse
 import org.springframework.http.HttpStatus
@@ -34,5 +35,10 @@ class LectureRestController(
             .toCommand()
 
         return CommonResponse.ok(lectureService.getMyLectureAppliedStatus(command))
+    }
+
+    @GetMapping
+    fun getLectureList() : CommonResponse<List<Lecture>> {
+        return CommonResponse.ok(lectureService.getLectureList())
     }
 }

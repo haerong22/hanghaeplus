@@ -7,7 +7,7 @@ import jakarta.persistence.Table
 
 @Table(name = "lecture_applicant")
 @Entity
-internal data class LectureApplicantEntity(
+internal class LectureApplicantEntity(
 
     @Column(nullable = false)
     val userId: Long,

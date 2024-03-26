@@ -1,6 +1,7 @@
 package io.hhplus.cleanarchitecture.domain.lecture
 
 import io.hhplus.cleanarchitecture.domain.stub.LectureRepositoryStub
+import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -70,5 +71,20 @@ class LectureServiceTest {
         assertThatThrownBy { lectureService.apply(userId) }
             .isInstanceOf(LectureException::class.java)
             .hasMessage("강의 신청 마감되었습니다.")
+    }
+
+    @Test
+    fun `강의 리스트를 조회한다`() {
+        // given
+        val lectureRepository = LectureRepositoryStub()
+        val lectureReader = LectureReader(lectureRepository)
+        val lectureManager = LectureManager(lectureRepository)
+        val lectureService = LectureService(lectureReader, lectureManager)
+
+        // when
+        val result = lectureService.getLectureList()
+
+        // then
+        assertThat(result).isNotNull
     }
 }

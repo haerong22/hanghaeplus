@@ -9,13 +9,13 @@ import java.time.LocalDateTime
 
 @Table(name = "lecture")
 @Entity
-internal data class LectureEntity(
+internal class LectureEntity(
 
     @Column(nullable = false)
     val name: String,
 
     @Column(nullable = false)
-    val quota: Int,
+    val quota: Int = 30,
 
     @Column(nullable = false)
     val startAt: LocalDateTime,

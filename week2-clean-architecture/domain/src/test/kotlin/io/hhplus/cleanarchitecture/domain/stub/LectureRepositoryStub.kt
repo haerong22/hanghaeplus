@@ -32,6 +32,11 @@ class LectureRepositoryStub(
         return isApply
     }
 
+    override fun getLectureList(): List<Lecture> {
+        count(object{}.javaClass.enclosingMethod.name)
+        return emptyList()
+    }
+
     private fun count(methodName: String) {
         callCount[methodName] = callCount.getOrDefault(methodName, 0) + 1
     }

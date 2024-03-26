@@ -30,4 +30,8 @@ class LectureService(
     fun getMyLectureAppliedStatus(command: LectureAppliedStatusCommand) : Boolean {
         return lectureReader.existApply(command.lectureId, command.userid)
     }
+
+    fun getLectureList() : List<Lecture> {
+        return lectureReader.getLectureList()
+    }
 }

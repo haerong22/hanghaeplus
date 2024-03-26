@@ -4,6 +4,7 @@ import io.hhplus.cleanarchitecture.domain.lecture.LectureException
 import io.hhplus.cleanarchitecture.jpa.DbTestSupport
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.groups.Tuple.tuple
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
@@ -71,4 +72,36 @@ internal class LectureRepositoryImplTest(
         assertThat(result1).isTrue()
         assertThat(result2).isFalse()
     }
+
+    @Test
+    fun `강의 리스트를 조회 할 수 있다`() {
+        // given
+        val startAt = LocalDateTime.now()
+        val lecture1 = LectureEntity("강의1", 10, startAt)
+        val lecture2 = LectureEntity("강의2", 30, startAt)
+        lectureJpaRepository.saveAll(listOf(lecture1, lecture2))
+
+        // when
+        val result = lectureRepositoryImpl.getLectureList()
+
+        // then
+        assertThat(result).hasSize(2)
+            .extracting("name", "quota", "startAt", "status")
+            .containsExactlyInAnyOrder(
+                tuple("강의1", 10, startAt),
+                tuple("강의2", 30, startAt),
+            )
+    }
+
+    @Test
+    fun `강의가 없을 경우 빈 리스트를 응답한다`() {
+        // given
+
+        // when
+        val result = lectureRepositoryImpl.getLectureList()
+
+        // then
+        assertThat(result).isNotNull().isEmpty()
+    }
+
 }

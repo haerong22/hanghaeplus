@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(LectureRestController::class)
-class LectureRestControllerTest: WebTestSupport() {
+class LectureRestControllerTest : WebTestSupport() {
 
     @MockBean
     lateinit var lectureService: LectureService
@@ -102,6 +102,21 @@ class LectureRestControllerTest: WebTestSupport() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.code").value("400"))
             .andExpect(jsonPath("$.message").value("lectureId 는 양수 값 입니다."))
+    }
+
+    @Test
+    fun `강의 리스트 조회`() {
+        // given
+
+        // then
+        mockMvc.perform(
+            get("/api/lectures")
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.code").value("0"))
+            .andExpect(jsonPath("$.message").value("success"))
+            .andExpect(jsonPath("$.body").isArray)
     }
 
 }

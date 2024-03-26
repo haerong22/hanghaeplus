@@ -52,4 +52,18 @@ class LectureReaderTest {
         assertThat(result).isTrue()
     }
 
+    @Test
+    fun `강의 리스트를 조회 한다`() {
+        // given
+        val lectureRepository = LectureRepositoryStub()
+        val lectureReader = LectureReader(lectureRepository)
+
+        // when
+        val result = lectureReader.getLectureList()
+
+        // then
+        assertThat(lectureRepository.callCount["getLectureList"]).isEqualTo(1)
+        assertThat(result).isNotNull
+    }
+
 }

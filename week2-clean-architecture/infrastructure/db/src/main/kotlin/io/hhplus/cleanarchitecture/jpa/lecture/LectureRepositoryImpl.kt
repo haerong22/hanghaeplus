@@ -35,4 +35,9 @@ internal class LectureRepositoryImpl(
     override fun existApply(lectureId: Long, userId: Long): Boolean {
         return lectureApplicantJpaRepository.existsByLectureIdAndUserId(lectureId, userId)
     }
+
+    override fun getLectureList(): List<Lecture> {
+        return lectureJpaRepository.findAll()
+            .map { it.toDomain() }
+    }
 }
