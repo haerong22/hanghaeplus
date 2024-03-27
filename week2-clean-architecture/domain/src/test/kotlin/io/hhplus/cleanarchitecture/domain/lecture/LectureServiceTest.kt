@@ -14,7 +14,8 @@ class LectureServiceTest {
         val lectureRepository = LectureRepositoryStub(isApply = false)
         val lectureReader = LectureReader(lectureRepository)
         val lectureManager = LectureManager(lectureRepository)
-        val lectureService = LectureService(lectureReader, lectureManager)
+        val lectureValidator = LectureValidator(lectureReader)
+        val lectureService = LectureService(lectureReader, lectureManager, lectureValidator)
 
         val userId = 1L
 
@@ -31,7 +32,8 @@ class LectureServiceTest {
         val lectureRepository = LectureRepositoryStub(startDate = LocalDateTime.now().plusDays(1))
         val lectureReader = LectureReader(lectureRepository)
         val lectureManager = LectureManager(lectureRepository)
-        val lectureService = LectureService(lectureReader, lectureManager)
+        val lectureValidator = LectureValidator(lectureReader)
+        val lectureService = LectureService(lectureReader, lectureManager, lectureValidator)
 
         val userId = 1L
 
@@ -47,7 +49,8 @@ class LectureServiceTest {
         val lectureRepository = LectureRepositoryStub()
         val lectureReader = LectureReader(lectureRepository)
         val lectureManager = LectureManager(lectureRepository)
-        val lectureService = LectureService(lectureReader, lectureManager)
+        val lectureValidator = LectureValidator(lectureReader)
+        val lectureService = LectureService(lectureReader, lectureManager, lectureValidator)
 
         val userId = 1L
 
@@ -63,7 +66,8 @@ class LectureServiceTest {
         val lectureRepository = LectureRepositoryStub(applicantCount = 30, isApply = false)
         val lectureReader = LectureReader(lectureRepository)
         val lectureManager = LectureManager(lectureRepository)
-        val lectureService = LectureService(lectureReader, lectureManager)
+        val lectureValidator = LectureValidator(lectureReader)
+        val lectureService = LectureService(lectureReader, lectureManager, lectureValidator)
 
         val userId = 1L
 
@@ -79,7 +83,8 @@ class LectureServiceTest {
         val lectureRepository = LectureRepositoryStub()
         val lectureReader = LectureReader(lectureRepository)
         val lectureManager = LectureManager(lectureRepository)
-        val lectureService = LectureService(lectureReader, lectureManager)
+        val lectureValidator = LectureValidator(lectureReader)
+        val lectureService = LectureService(lectureReader, lectureManager, lectureValidator)
 
         // when
         val result = lectureService.getLectureList()

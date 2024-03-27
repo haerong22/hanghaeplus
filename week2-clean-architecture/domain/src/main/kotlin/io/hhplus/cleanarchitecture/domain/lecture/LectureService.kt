@@ -9,18 +9,15 @@ import java.time.LocalDateTime
 class LectureService(
     private val lectureReader: LectureReader,
     private val lectureManager: LectureManager,
+    private val lectureValidator: LectureValidator,
 ) {
 
     @Transactional
     fun apply(userId: Long) {
         val user = User(userId)
-
         val lecture = lectureReader.getLectureWithLock(1L)
-            .also {
-                it.checkPeriod(LocalDateTime.now())
-                it.checkAlreadyApplied(lectureReader.existApply(it.id, user.id))
-                it.checkQuota(lectureReader.getLectureApplicantCount(it.id))
-            }
+
+        lectureValidator.validate(lecture, user)
 
         val lectureApplicant = LectureApplicant.create(user, lecture)
 

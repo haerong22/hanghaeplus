@@ -86,7 +86,7 @@ internal class LectureRepositoryImplTest(
 
         // then
         assertThat(result).hasSize(2)
-            .extracting("name", "quota", "startAt", "status")
+            .extracting("name", "quota", "startAt")
             .containsExactlyInAnyOrder(
                 tuple("강의1", 10, startAt),
                 tuple("강의2", 30, startAt),
