@@ -1,8 +1,8 @@
-package io.hhplus.cleanarchitecture.web.lecture
+package io.hhplus.cleanarchitecture.api.lecture
 
 import io.hhplus.cleanarchitecture.domain.lecture.Lecture
 import io.hhplus.cleanarchitecture.domain.lecture.LectureService
-import io.hhplus.cleanarchitecture.web.CommonResponse
+import io.hhplus.cleanarchitecture.api.CommonResponse
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 

@@ -1,4 +1,4 @@
-package io.hhplus.cleanarchitecture.web.lecture
+package io.hhplus.cleanarchitecture.api.lecture
 
 import io.hhplus.cleanarchitecture.domain.common.BadRequestException
 import io.hhplus.cleanarchitecture.domain.common.CommonErrorCode

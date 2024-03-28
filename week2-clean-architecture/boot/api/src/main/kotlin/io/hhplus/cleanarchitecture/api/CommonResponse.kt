@@ -1,4 +1,4 @@
-package io.hhplus.cleanarchitecture.web
+package io.hhplus.cleanarchitecture.api
 
 import io.hhplus.cleanarchitecture.domain.common.ErrorCode
 

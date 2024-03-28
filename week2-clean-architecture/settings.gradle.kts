@@ -2,7 +2,7 @@ rootProject.name = "clean-architecture"
 
 include("domain")
 
-include("infrastructure:db")
-include("infrastructure:config")
+include("modules:db")
+include("modules:config")
 
-include("interfaces:web")
+include("boot:api")

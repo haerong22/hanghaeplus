@@ -8,7 +8,7 @@ tasks.getByName("jar") {
 
 dependencies {
     implementation(project(":domain"))
-    implementation(project(":infrastructure:db"))
+    implementation(project(":modules:db"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
 }

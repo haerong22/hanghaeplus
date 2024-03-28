@@ -1,7 +1,7 @@
-package io.hhplus.cleanarchitecture.web.lecture
+package io.hhplus.cleanarchitecture.api.lecture
 
 import io.hhplus.cleanarchitecture.domain.lecture.LectureService
-import io.hhplus.cleanarchitecture.web.WebTestSupport
+import io.hhplus.cleanarchitecture.api.WebTestSupport
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource

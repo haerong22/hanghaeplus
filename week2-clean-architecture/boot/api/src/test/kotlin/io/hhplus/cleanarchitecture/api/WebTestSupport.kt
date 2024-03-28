@@ -1,4 +1,4 @@
-package io.hhplus.cleanarchitecture.web
+package io.hhplus.cleanarchitecture.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
