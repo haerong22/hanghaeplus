@@ -12,9 +12,9 @@ class LectureService(
 ) {
 
     @Transactional
-    fun apply(userId: Long) {
-        val user = User(userId)
-        val lecture = lectureReader.getLectureWithLock(1L)
+    fun apply(command: LectureApplyCommand) {
+        val user = User(command.userid)
+        val lecture = lectureReader.getLectureWithLock(command.lectureId)
 
         lectureValidator.validate(lecture, user)
 

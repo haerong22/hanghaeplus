@@ -13,13 +13,17 @@ class LectureRestController(
 ) {
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/apply")
+    @PostMapping("/{lectureId}/apply")
     fun applyLecture(
-        @RequestBody request: LectureApplyRequest
+        @PathVariable lectureId: Long,
+        @RequestBody request: LectureApplyRequest,
     ): CommonResponse<Void> {
-        request.validate()
+        val command = request
+            .apply { this.lectureId = lectureId }
+            .validate()
+            .toCommand()
 
-        lectureService.apply(request.userId)
+        lectureService.apply(command)
 
         return CommonResponse.ok()
     }
@@ -38,7 +42,7 @@ class LectureRestController(
     }
 
     @GetMapping
-    fun getLectureList() : CommonResponse<List<Lecture>> {
+    fun getLectureList(): CommonResponse<List<Lecture>> {
         return CommonResponse.ok(lectureService.getLectureList())
     }
 }
