@@ -8,7 +8,7 @@ import io.hhplus.cleanarchitecture.domain.lecture.LectureRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-internal class LectureRepositoryImpl(
+class LectureRepositoryImpl(
     private val lectureJpaRepository: LectureJpaRepository,
     private val lectureApplicantJpaRepository: LectureApplicantJpaRepository,
 ) : LectureRepository {

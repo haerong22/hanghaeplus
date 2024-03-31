@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 @Table(name = "lecture")
 @Entity
-internal class LectureEntity(
+class LectureEntity(
 
     @Column(nullable = false)
     val name: String,

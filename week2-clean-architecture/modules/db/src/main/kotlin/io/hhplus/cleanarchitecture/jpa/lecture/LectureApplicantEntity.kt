@@ -16,7 +16,7 @@ import jakarta.persistence.UniqueConstraint
     ]
 )
 @Entity
-internal class LectureApplicantEntity(
+class LectureApplicantEntity(
 
     @Column(nullable = false)
     val userId: Long,

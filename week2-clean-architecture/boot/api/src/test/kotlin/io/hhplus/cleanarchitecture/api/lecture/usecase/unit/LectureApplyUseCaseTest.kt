@@ -1,12 +1,13 @@
-package io.hhplus.cleanarchitecture.domain.lecture
+package io.hhplus.cleanarchitecture.api.lecture.usecase.unit
 
-import io.hhplus.cleanarchitecture.domain.stub.LectureRepositoryStub
-import org.assertj.core.api.Assertions.assertThat
+import io.hhplus.cleanarchitecture.api.lecture.stub.LectureRepositoryStub
+import io.hhplus.cleanarchitecture.api.lecture.usecase.LectureApplyUseCase
+import io.hhplus.cleanarchitecture.domain.lecture.*
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
-class LectureServiceTest {
+class LectureApplyUseCaseTest {
 
     @Test
     fun `강의를 신청 할 수 있다`() {
@@ -15,12 +16,14 @@ class LectureServiceTest {
         val lectureReader = LectureReader(lectureRepository)
         val lectureManager = LectureManager(lectureRepository)
         val lectureValidator = LectureValidator(lectureReader)
-        val lectureService = LectureService(lectureReader, lectureManager, lectureValidator)
 
+        val useCase = LectureApplyUseCase(lectureReader, lectureManager, lectureValidator)
+
+        val lectureId = 1L
         val userId = 1L
 
         // when
-        lectureService.apply(userId)
+        useCase(LectureApplyCommand(lectureId, userId))
 
         // then
         assert(true)
@@ -33,12 +36,14 @@ class LectureServiceTest {
         val lectureReader = LectureReader(lectureRepository)
         val lectureManager = LectureManager(lectureRepository)
         val lectureValidator = LectureValidator(lectureReader)
-        val lectureService = LectureService(lectureReader, lectureManager, lectureValidator)
 
+        val useCase = LectureApplyUseCase(lectureReader, lectureManager, lectureValidator)
+
+        val lectureId = 1L
         val userId = 1L
 
         // when, then
-        assertThatThrownBy { lectureService.apply(userId) }
+        assertThatThrownBy { useCase(LectureApplyCommand(lectureId, userId)) }
             .isInstanceOf(LectureException::class.java)
             .hasMessage("강의 신청 기간이 아닙니다.")
     }
@@ -50,12 +55,14 @@ class LectureServiceTest {
         val lectureReader = LectureReader(lectureRepository)
         val lectureManager = LectureManager(lectureRepository)
         val lectureValidator = LectureValidator(lectureReader)
-        val lectureService = LectureService(lectureReader, lectureManager, lectureValidator)
 
+        val useCase = LectureApplyUseCase(lectureReader, lectureManager, lectureValidator)
+
+        val lectureId = 1L
         val userId = 1L
 
         // when, then
-        assertThatThrownBy { lectureService.apply(userId) }
+        assertThatThrownBy { useCase(LectureApplyCommand(lectureId, userId)) }
             .isInstanceOf(LectureException::class.java)
             .hasMessage("이미 신청 되었습니다.")
     }
@@ -67,29 +74,15 @@ class LectureServiceTest {
         val lectureReader = LectureReader(lectureRepository)
         val lectureManager = LectureManager(lectureRepository)
         val lectureValidator = LectureValidator(lectureReader)
-        val lectureService = LectureService(lectureReader, lectureManager, lectureValidator)
 
+        val useCase = LectureApplyUseCase(lectureReader, lectureManager, lectureValidator)
+
+        val lectureId = 1L
         val userId = 1L
 
         // when, then
-        assertThatThrownBy { lectureService.apply(userId) }
+        assertThatThrownBy { useCase(LectureApplyCommand(lectureId, userId)) }
             .isInstanceOf(LectureException::class.java)
             .hasMessage("강의 신청 마감되었습니다.")
-    }
-
-    @Test
-    fun `강의 리스트를 조회한다`() {
-        // given
-        val lectureRepository = LectureRepositoryStub()
-        val lectureReader = LectureReader(lectureRepository)
-        val lectureManager = LectureManager(lectureRepository)
-        val lectureValidator = LectureValidator(lectureReader)
-        val lectureService = LectureService(lectureReader, lectureManager, lectureValidator)
-
-        // when
-        val result = lectureService.getLectureList()
-
-        // then
-        assertThat(result).isNotNull
     }
 }

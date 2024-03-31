@@ -2,7 +2,7 @@ package io.hhplus.cleanarchitecture.jpa.lecture
 
 import org.springframework.data.jpa.repository.JpaRepository
 
-internal interface LectureApplicantJpaRepository : JpaRepository<LectureApplicantEntity, Long> {
+interface LectureApplicantJpaRepository : JpaRepository<LectureApplicantEntity, Long> {
 
     fun countByLectureId(lectureId: Long) : Int
 

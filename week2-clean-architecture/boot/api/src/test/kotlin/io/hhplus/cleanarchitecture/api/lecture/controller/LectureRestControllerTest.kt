@@ -1,7 +1,10 @@
-package io.hhplus.cleanarchitecture.api.lecture
+package io.hhplus.cleanarchitecture.api.lecture.controller
 
-import io.hhplus.cleanarchitecture.domain.lecture.LectureService
 import io.hhplus.cleanarchitecture.api.WebTestSupport
+import io.hhplus.cleanarchitecture.api.lecture.dto.LectureApplyRequest
+import io.hhplus.cleanarchitecture.api.lecture.usecase.LectureAppliedStatusUseCase
+import io.hhplus.cleanarchitecture.api.lecture.usecase.LectureApplyUseCase
+import io.hhplus.cleanarchitecture.api.lecture.usecase.LectureListUseCase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -17,17 +20,18 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @WebMvcTest(LectureRestController::class)
 class LectureRestControllerTest : WebTestSupport() {
 
-    @MockBean
-    lateinit var lectureService: LectureService
+    @MockBean lateinit var lectureApplyUseCase: LectureApplyUseCase
+    @MockBean lateinit var lectureAppliedStatusUseCase: LectureAppliedStatusUseCase
+    @MockBean lateinit var lectureListUseCase: LectureListUseCase
 
     @Test
     fun `수강 신청 성공`() {
         // given
-        val request = LectureApplyRequest(1L)
+        val request = LectureApplyRequest(userId = 1L)
 
         // then
         mockMvc.perform(
-            post("/api/lectures/apply")
+            post("/api/lectures/1/apply")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
         )
@@ -41,11 +45,11 @@ class LectureRestControllerTest : WebTestSupport() {
     @ValueSource(longs = [-1, 0])
     fun `수강 신청 시 userId는 양수이다`(userId: Long) {
         // given
-        val request = LectureApplyRequest(userId)
+        val request = LectureApplyRequest(userId = userId)
 
         // then
         mockMvc.perform(
-            post("/api/lectures/apply")
+            post("/api/lectures/1/apply")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
         )

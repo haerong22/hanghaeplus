@@ -1,15 +1,21 @@
-package io.hhplus.cleanarchitecture.api.lecture
+package io.hhplus.cleanarchitecture.api.lecture.controller
 
-import io.hhplus.cleanarchitecture.domain.lecture.Lecture
-import io.hhplus.cleanarchitecture.domain.lecture.LectureService
 import io.hhplus.cleanarchitecture.api.CommonResponse
+import io.hhplus.cleanarchitecture.api.lecture.dto.LectureAppliedStatusRequest
+import io.hhplus.cleanarchitecture.api.lecture.dto.LectureApplyRequest
+import io.hhplus.cleanarchitecture.api.lecture.usecase.LectureAppliedStatusUseCase
+import io.hhplus.cleanarchitecture.api.lecture.usecase.LectureApplyUseCase
+import io.hhplus.cleanarchitecture.api.lecture.usecase.LectureListUseCase
+import io.hhplus.cleanarchitecture.domain.lecture.Lecture
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/lectures")
 class LectureRestController(
-    private val lectureService: LectureService
+    private val lectureApplyUseCase: LectureApplyUseCase,
+    private val lectureAppliedStatusUseCase: LectureAppliedStatusUseCase,
+    private val lectureListUseCase: LectureListUseCase,
 ) {
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -23,7 +29,7 @@ class LectureRestController(
             .validate()
             .toCommand()
 
-        lectureService.apply(command)
+        lectureApplyUseCase(command)
 
         return CommonResponse.ok()
     }
@@ -38,11 +44,11 @@ class LectureRestController(
             .validate()
             .toCommand()
 
-        return CommonResponse.ok(lectureService.getMyLectureAppliedStatus(command))
+        return CommonResponse.ok(lectureAppliedStatusUseCase(command))
     }
 
     @GetMapping
     fun getLectureList(): CommonResponse<List<Lecture>> {
-        return CommonResponse.ok(lectureService.getLectureList())
+        return CommonResponse.ok(lectureListUseCase())
     }
 }

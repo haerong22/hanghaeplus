@@ -1,4 +1,4 @@
-package io.hhplus.cleanarchitecture.jpa
+package io.hhplus.cleanarchitecture.api
 
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
